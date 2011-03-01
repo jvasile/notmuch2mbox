@@ -25,7 +25,7 @@ distribute this software under the GNU General Public License, Version
 <http://www.gnu.org/licenses/gpl.html>.
 """
 
-NOTMUCH_BIN = "notmuch"
+NOTMUCH_BIN = "notmuch-retry"
 
 import os, sys, subprocess
 from optparse import OptionParser
@@ -41,6 +41,9 @@ def parse_options():
 
 This program uses notmuch to search for the search terms, then outputs
 any found emails in mbox format.
+
+Make sure notmuch-retry is in your path or that you use the -n switch
+to specify your usual notmuch binary.
 """
 
     parser = OptionParser(usage=help)
