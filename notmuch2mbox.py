@@ -47,9 +47,9 @@ delays due to database locking.
 """
 
     parser = OptionParser(usage=help)
-    parser.add_option("-n", "--notmuch", dest="notmuch", default=NOTMUCH_BIN, help="Path to notmuch binary.  In the case of an error, notmuch2mbox retries using the notmuch found in the path.")
+    parser.add_option("-n", "--notmuch", dest="notmuch", default=NOTMUCH_BIN, help="path to notmuch binary.  In the case of an error, notmuch2mbox retries using the notmuch found in the path.")
     parser.add_option("-o", "--outfile", dest="outfile", action="store", 
-                      help="Write mbox to specified path instead of stdout")
+                      help="write mbox to specified path instead of stdout")
     (opts, args) = parser.parse_args()
 
     opts.search = ' '.join(args)
