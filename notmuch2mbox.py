@@ -5,7 +5,20 @@ notmuch2mbox - search notmuch for email and pack them in an mbox.
 
 See notmuch2mbox --help for instructions.
 
-This code is versioned at 
+This code is versioned at https://github.com/jvasile/notmuch2mbox
+
+If you want to integrate this into notmuch emacs, add this to your
+.emacs, then call it with `M-x notmuch-search-make-mbox`:
+
+(setf notmuch2mbox-dest "~/notmuch.mbox")
+(defun notmuch-search-make-mbox (&optional query)
+  "Make an mbox of the current search results.  Put mbox in file indicated by notmuch2mbox-dest"
+  (interactive)
+  (when (null query) (setq query notmuch-search-query-string))
+  (let ((dest (expand-file-name notmuch2mbox-dest)))
+    (call-process "notmuch2mbox.py" nil 0 nil "-o" dest query)
+    ))
+
 Copyright 2011 James Vasile (james@hackervisions.org).  You may
 distribute this software under the GNU General Public License, Version
 3 or later.  For a copy of this license, see
