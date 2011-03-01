@@ -42,12 +42,12 @@ def parse_options():
 This program uses notmuch to search for the search terms, then outputs
 any found emails in mbox format.
 
-Make sure notmuch-retry is in your path or that you use the -n switch
-to specify your usual notmuch binary.
+If notmuch-retry is in your path this script will use it to reduce
+delays due to database locking.
 """
 
     parser = OptionParser(usage=help)
-    parser.add_option("-n", "--notmuch", dest="notmuch", default=NOTMUCH_BIN, help="Path to notmuch binary.")
+    parser.add_option("-n", "--notmuch", dest="notmuch", default=NOTMUCH_BIN, help="Path to notmuch binary.  In the case of an error, notmuch2mbox retries using the notmuch found in the path.")
     parser.add_option("-o", "--outfile", dest="outfile", action="store", 
                       help="Write mbox to specified path instead of stdout")
     (opts, args) = parser.parse_args()
@@ -59,11 +59,26 @@ to specify your usual notmuch binary.
 
     return opts
 
+def get_filenames(search, bin="notmuch"):
+    cmd = '%(bin)s show %(search)s | grep -o " filename:[^ ]*" | sed "s/ filename://"' % {'bin':bin, 'search':search}
+    pipe = subprocess.Popen(cmd, shell=True, bufsize=1024, 
+                                 stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    filespecs = pipe.stdout.read().rstrip().split("\n")
+    err_msg = pipe.stderr.read().rstrip()
+
+    if err_msg:
+        if bin != "notmuch":
+            filespecs = get_filenames(search)
+        else:
+            stderr.write(err_msg)
+            sys.exit(255)
+
+    return filespecs
+
 def make_mbox(search, outfile=None, bin="notmuch"):
     from email.parser import Parser
 
-    cmd = '%(bin)s show %(search)s | grep -o " filename:[^ ]*" | sed "s/ filename://"' % {'bin':bin, 'search':search}
-    filespecs = subprocess.Popen(cmd, shell=True, bufsize=1024, stdout=subprocess.PIPE).stdout.read().rstrip().split("\n")
+    filespecs = get_filenames(search, bin)
 
     if outfile:
         FH = open(outfile, 'w')
