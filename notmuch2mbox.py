@@ -62,8 +62,11 @@ def make_mbox(search, outfile=None, bin="notmuch"):
         headers = Parser().parsestr(email, headersonly=False)
 
         #TODO: fake envelope-sender by parsing From or Reply-To
-        
-        print headers
+
+        if outfile:
+            FH.write(str(headers))
+        else:
+            print headers
 
     if outfile:
         FH.close()
