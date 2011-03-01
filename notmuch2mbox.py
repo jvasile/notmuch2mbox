@@ -5,6 +5,7 @@ notmuch2mbox - search notmuch for email and pack them in an mbox.
 
 See notmuch2mbox --help for instructions.
 
+This code is versioned at 
 Copyright 2011 James Vasile (james@hackervisions.org).  You may
 distribute this software under the GNU General Public License, Version
 3 or later.  For a copy of this license, see
@@ -52,11 +53,16 @@ def make_mbox(search, outfile=None, bin="notmuch"):
         FH = open(outfile, 'w')
 
     for filespec in filespecs:
-        email = slurp(filespec)
-        headers = Parser().parsestr(slurp(filespec), headersonly=False)
+        try:
+            email = slurp(filespec)
+        except IOError, e:
+            sys.stderr.write("Couldn't open %s: %s\nSkipping." % (filespec, e))
+            continue
+
+        headers = Parser().parsestr(email, headersonly=False)
 
         #TODO: fake envelope-sender by parsing From or Reply-To
-
+        
         print headers
 
     if outfile:
