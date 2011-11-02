@@ -70,7 +70,7 @@ def get_filenames(search, bin="notmuch"):
         if bin != "notmuch":
             filespecs = get_filenames(search)
         else:
-            stderr.write(err_msg)
+            sys.stderr.write(err_msg)
             sys.exit(255)
 
     return filespecs
